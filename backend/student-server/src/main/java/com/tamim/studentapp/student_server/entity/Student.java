@@ -17,6 +17,7 @@ public class Student {
     private String name;
     private String email;
     private String password;
+    private String role = "STUDENT";
 
     @ManyToMany(cascade = CascadeType.MERGE)
     @JoinTable(

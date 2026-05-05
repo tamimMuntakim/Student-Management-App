@@ -27,7 +27,11 @@ document.getElementById('login-form')?.addEventListener('submit', async (e) => {
         if (response.ok) {
             const user = await response.json();
             localStorage.setItem('studentUser', JSON.stringify(user));
-            window.location.href = 'index.html';
+            if (user.role === 'ADMIN') {
+                window.location.href = 'index.html';
+            } else {
+                window.location.href = 'student_dashboard.html';
+            }
         } else {
             alert('Invalid credentials');
         }

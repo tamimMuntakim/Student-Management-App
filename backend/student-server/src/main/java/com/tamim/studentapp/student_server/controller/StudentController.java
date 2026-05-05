@@ -82,4 +82,43 @@ public class StudentController {
     public List<Subject> getSubjects() {
         return subjectRepository.findAll();
     }
+
+    @PutMapping("/students/{id}")
+    public Student updateStudent(@PathVariable UUID id, @RequestBody Student studentDetails) {
+        Student student = studentRepository.findById(id).orElseThrow(() -> new RuntimeException("Student not found"));
+        student.setName(studentDetails.getName());
+        student.setEmail(studentDetails.getEmail());
+        if (studentDetails.getRole() != null) {
+            student.setRole(studentDetails.getRole());
+        }
+        return studentRepository.save(student);
+    }
+
+    @DeleteMapping("/students/{id}")
+    public ResponseEntity<?> deleteStudent(@PathVariable UUID id) {
+        studentRepository.deleteById(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/subjects/{id}")
+    public Subject updateSubject(@PathVariable Long id, @RequestBody Subject subjectDetails) {
+        Subject subject = subjectRepository.findById(id).orElseThrow(() -> new RuntimeException("Subject not found"));
+        subject.setName(subjectDetails.getName());
+        subject.setCode(subjectDetails.getCode());
+        return subjectRepository.save(subject);
+    }
+
+    @DeleteMapping("/subjects/{id}")
+    public ResponseEntity<?> deleteSubject(@PathVariable Long id) {
+        Subject subject = subjectRepository.findById(id).orElseThrow(() -> new RuntimeException("Subject not found"));
+        List<Student> students = studentRepository.findAll();
+        for (Student s : students) {
+            if (s.getSubjects().contains(subject)) {
+                s.getSubjects().remove(subject);
+                studentRepository.save(s);
+            }
+        }
+        subjectRepository.delete(subject);
+        return ResponseEntity.ok().build();
+    }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import 'home_screen.dart';
+import 'student_dashboard.dart';
 
 class AuthScreen extends StatefulWidget {
   @override
@@ -25,8 +26,13 @@ class _AuthScreenState extends State<AuthScreen> {
         final user = await _apiService.login(email, password);
         if (user != null) {
           if (!mounted) return;
-          Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (_) => HomeScreen()));
+          if (user.role == 'ADMIN') {
+            Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (_) => HomeScreen()));
+          } else {
+            Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (_) => StudentDashboardScreen(student: user)));
+          }
         } else {
           if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(

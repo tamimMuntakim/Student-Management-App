@@ -5,6 +5,7 @@ class Student {
   final String name;
   final String email;
   final String? password;
+  final String? role;
   final List<Subject> subjects;
 
   Student({
@@ -12,6 +13,7 @@ class Student {
     required this.name,
     required this.email,
     this.password,
+    this.role,
     this.subjects = const [],
   });
 
@@ -24,6 +26,7 @@ class Student {
       name: json['name'],
       email: json['email'],
       password: json['password'],
+      role: json['role'] ?? 'STUDENT',
       subjects: parsedSubjects,
     );
   }
@@ -34,6 +37,7 @@ class Student {
       'name': name,
       'email': email,
       'password': password,
+      'role': role ?? 'STUDENT',
       'subjects': subjects.map((e) => e.toJson()).toList(),
     };
   }

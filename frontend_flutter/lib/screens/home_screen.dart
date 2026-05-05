@@ -90,6 +90,40 @@ class _StudentsViewState extends State<StudentsView> {
     _fetchStudents();
   }
 
+  void _deleteStudent(String id) async {
+    await _apiService.deleteStudent(id);
+    _fetchStudents();
+  }
+
+  void _editStudent(Student student) {
+    final nameCtrl = TextEditingController(text: student.name);
+    final emailCtrl = TextEditingController(text: student.email);
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('Edit Student'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(controller: nameCtrl, decoration: InputDecoration(labelText: 'Name')),
+            TextField(controller: emailCtrl, decoration: InputDecoration(labelText: 'Email')),
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text('Cancel')),
+          ElevatedButton(
+            onPressed: () async {
+              await _apiService.updateStudent(student.id!, nameCtrl.text, emailCtrl.text);
+              Navigator.pop(ctx);
+              _fetchStudents();
+            },
+            child: Text('Save'),
+          )
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -111,9 +145,26 @@ class _StudentsViewState extends State<StudentsView> {
             itemBuilder: (context, index) {
               final student = _students[index];
               final subjects = student.subjects.map((s) => s.name).join(', ');
-              return ListTile(
-                title: Text(student.name),
-                subtitle: Text('${student.email}\\nSubjects: ${subjects.isEmpty ? 'None' : subjects}'),
+              return Card(
+                margin: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                child: ListTile(
+                  title: Text(student.name, style: TextStyle(fontWeight: FontWeight.bold)),
+                  subtitle: Text('${student.email}\\nSubjects: ${subjects.isEmpty ? 'None' : subjects}'),
+                  isThreeLine: true,
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.edit, color: Colors.blue),
+                        onPressed: () => _editStudent(student),
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.delete, color: Colors.red),
+                        onPressed: () => _deleteStudent(student.id!),
+                      )
+                    ],
+                  ),
+                ),
               );
             },
           ),
@@ -153,6 +204,40 @@ class _SubjectsViewState extends State<SubjectsView> {
     _fetchSubjects();
   }
 
+  void _deleteSubject(int id) async {
+    await _apiService.deleteSubject(id);
+    _fetchSubjects();
+  }
+
+  void _editSubject(Subject subject) {
+    final nameCtrl = TextEditingController(text: subject.name);
+    final codeCtrl = TextEditingController(text: subject.code);
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('Edit Subject'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(controller: nameCtrl, decoration: InputDecoration(labelText: 'Subject Name')),
+            TextField(controller: codeCtrl, decoration: InputDecoration(labelText: 'Subject Code')),
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text('Cancel')),
+          ElevatedButton(
+            onPressed: () async {
+              await _apiService.updateSubject(subject.id!, nameCtrl.text, codeCtrl.text);
+              Navigator.pop(ctx);
+              _fetchSubjects();
+            },
+            child: Text('Save'),
+          )
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -173,9 +258,26 @@ class _SubjectsViewState extends State<SubjectsView> {
             itemCount: _subjects.length,
             itemBuilder: (context, index) {
               final subject = _subjects[index];
-              return ListTile(
-                title: Text(subject.name),
-                subtitle: Text(subject.code),
+              return Card(
+                margin: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                child: ListTile(
+                  leading: CircleAvatar(child: Text(subject.code.isNotEmpty ? subject.code.substring(0,1) : '')),
+                  title: Text(subject.name, style: TextStyle(fontWeight: FontWeight.bold)),
+                  subtitle: Text(subject.code),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.edit, color: Colors.blue),
+                        onPressed: () => _editSubject(subject),
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.delete, color: Colors.red),
+                        onPressed: () => _deleteSubject(subject.id!),
+                      )
+                    ],
+                  ),
+                ),
               );
             },
           ),

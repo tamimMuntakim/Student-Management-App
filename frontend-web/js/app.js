@@ -44,7 +44,7 @@ async function fetchStudents() {
         selectStudent.innerHTML = '<option value="">-- Select Student --</option>';
 
         students.forEach(student => {
-            // Populate table row
+            if (student.role === 'ADMIN') return; // Hide admins from list maybe? Or show them but limit actions. Let's just render all.
             const tr = document.createElement('tr');
             const assignedSubjects = student.subjects 
                 ? student.subjects.map(sub => sub.name).join(', ') 
@@ -54,6 +54,10 @@ async function fetchStudents() {
                 <td>${student.name}</td>
                 <td>${student.email}</td>
                 <td>${assignedSubjects || 'None'}</td>
+                <td>
+                    <button onclick="editStudent('${student.id}', '${student.name}', '${student.email}')">Edit</button>
+                    <button onclick="deleteStudent('${student.id}')">Delete</button>
+                </td>
             `;
             studentsTableBody.appendChild(tr);
 
@@ -98,6 +102,10 @@ async function fetchSubjects() {
                 <td>${subject.id}</td>
                 <td>${subject.name}</td>
                 <td>${subject.code}</td>
+                <td>
+                    <button onclick="editSubject(${subject.id}, '${subject.name}', '${subject.code}')">Edit</button>
+                    <button onclick="deleteSubject(${subject.id})">Delete</button>
+                </td>
             `;
             subjectsTableBody.appendChild(tr);
 
@@ -180,3 +188,63 @@ assignSubjectForm.addEventListener('submit', async (e) => {
         console.error('Failure assigning subject:', err);
     }
 });
+// --- Global Actions for Admin ---
+async function deleteStudent(id) {
+    if (!confirm('Are you sure you want to delete this student?')) return;
+    try {
+        const res = await fetch(`${API_BASE_URL}/students/${id}`, { method: 'DELETE' });
+        if (res.ok) fetchStudents();
+    } catch (e) {
+        console.error('Delete student failed', e);
+    }
+}
+
+async function deleteSubject(id) {
+    if (!confirm('Are you sure you want to delete this subject?')) return;
+    try {
+        const res = await fetch(`${API_BASE_URL}/subjects/${id}`, { method: 'DELETE' });
+        if (res.ok) {
+            fetchSubjects();
+            fetchStudents(); // Subjects map to students as well
+        }
+    } catch (e) {
+        console.error('Delete subject failed', e);
+    }
+}
+
+async function editStudent(id, oldName, oldEmail) {
+    const newName = prompt('Enter new name:', oldName);
+    const newEmail = prompt('Enter new email:', oldEmail);
+    if (newName && newEmail) {
+        try {
+            const res = await fetch(`${API_BASE_URL}/students/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: newName, email: newEmail })
+            });
+            if (res.ok) fetchStudents();
+        } catch (e) {
+            console.error('Update student failed', e);
+        }
+    }
+}
+
+async function editSubject(id, oldName, oldCode) {
+    const newName = prompt('Enter new subject name:', oldName);
+    const newCode = prompt('Enter new subject code:', oldCode);
+    if (newName && newCode) {
+        try {
+            const res = await fetch(`${API_BASE_URL}/subjects/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: newName, code: newCode })
+            });
+            if (res.ok) {
+                fetchSubjects();
+                fetchStudents();
+            }
+        } catch (e) {
+            console.error('Update subject failed', e);
+        }
+    }
+}

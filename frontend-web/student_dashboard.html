@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <header>
+        <h1>Welcome, <span id="student-name-display">Student</span>!</h1>
+        <nav style="margin-top: 1rem;">
+            <a href="#" onclick="logout()" style="color: white; text-decoration: underline; margin-left: 1rem;">Logout</a>
+        </nav>
+    </header>
+
+    <main class="container">
+        <div class="data-wrapper" style="width: 100%; margin-top: 20px;">
+            <section class="card">
+                <h2>Your Profile</h2>
+                <p><strong>Email:</strong> <span id="student-email-display"></span></p>
+                <p><strong>ID:</strong> <span id="student-id-display"></span></p>
+            </section>
+
+            <section class="card" style="margin-top: 20px;">
+                <h2>Your Enrolled Subjects</h2>
+                <table id="my-subjects-table">
+                    <thead>
+                        <tr>
+                            <th>Subject Name</th>
+                            <th>Subject Code</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Subject rows will be injected here -->
+                    </tbody>
+                </table>
+            </section>
+        </div>
+    </main>
+
+    <script>
+        function logout() {
+            localStorage.removeItem('studentUser');
+            window.location.href = 'login.html';
+        }
+
+        window.onload = () => {
+            const userStr = localStorage.getItem('studentUser');
+            if (!userStr) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            const user = JSON.parse(userStr);
+            document.getElementById('student-name-display').innerText = user.name;
+            document.getElementById('student-email-display').innerText = user.email;
+            document.getElementById('student-id-display').innerText = user.id;
+
+            const tbody = document.querySelector('#my-subjects-table tbody');
+            if (user.subjects && user.subjects.length > 0) {
+                user.subjects.forEach(sub => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${sub.name}</td>
+                        <td>${sub.code}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } else {
+                tbody.innerHTML = '<tr><td colspan="2">No subjects assigned yet.</td></tr>';
+            }
+        };
+    </script>
+</body>
+</html>

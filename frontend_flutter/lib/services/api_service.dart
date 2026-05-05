@@ -79,6 +79,23 @@ class ApiService {
     return response.statusCode == 200;
   }
 
+  Future<bool> updateStudent(String id, String name, String email) async {
+    final response = await http.put(
+      Uri.parse('$baseUrl/students/$id'),
+      headers: headers,
+      body: jsonEncode({'name': name, 'email': email}),
+    );
+    return response.statusCode == 200;
+  }
+
+  Future<bool> deleteStudent(String id) async {
+    final response = await http.delete(
+      Uri.parse('$baseUrl/students/$id'),
+      headers: headers,
+    );
+    return response.statusCode == 200;
+  }
+
   // Subjects Methods
   Future<List<Subject>> getSubjects() async {
     final response = await http.get(Uri.parse('$baseUrl/subjects'));
@@ -94,6 +111,23 @@ class ApiService {
       Uri.parse('$baseUrl/subjects'),
       headers: headers,
       body: jsonEncode({'name': name, 'code': code}),
+    );
+    return response.statusCode == 200;
+  }
+
+  Future<bool> updateSubject(int id, String name, String code) async {
+    final response = await http.put(
+      Uri.parse('$baseUrl/subjects/$id'),
+      headers: headers,
+      body: jsonEncode({'name': name, 'code': code}),
+    );
+    return response.statusCode == 200;
+  }
+
+  Future<bool> deleteSubject(int id) async {
+    final response = await http.delete(
+      Uri.parse('$baseUrl/subjects/$id'),
+      headers: headers,
     );
     return response.statusCode == 200;
   }
