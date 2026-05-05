@@ -55,11 +55,23 @@ A cross-platform mobile (and desktop/web) application built using **Dart / Flutt
   - `http`: For making REST API calls to the Spring Boot backend.
   - `provider`: For state management across widgets.
   - `shared_preferences`: To store local session/authentication state on the device.
-- **Key Components**:
-  - Entry Point (`lib/main.dart`): Checks `shared_preferences` for an existing user session (`studentUser`). Connects users to the `HomeScreen` if logged in, or the `AuthScreen` if not.
-  - `screens/`: Contains the UI logic (`auth_screen.dart`, `home_screen.dart`).
-  - `services/`: Contains `api_service.dart` for communicating with the backend.
-  - `models/`: Data classes representing `Student` and `Subject`.
+
+### Flutter Components
+
+The codebase in `/frontend_flutter/lib/` is organized logically by layer:
+
+#### 1. Entry Point (`main.dart`)
+- **`main.dart`**: Bootstraps the Flutter application. It initializes dependencies (like `provider`), configures app-wide theming, and acts as a router. It reads `shared_preferences` securely to determine if a `studentUser` exists—bypassing the login screen if already authenticated, mapping users directly to the `HomeScreen`.
+
+#### 2. Screens (`screens/`)
+- **`auth_screen.dart`**: Provides the UI for user login. It gathers credentials, communicates with the API service to authenticate, and sets the local session via SharedPreferences upon success.
+- **`home_screen.dart`**: The main dashboard of the app. Responsible for rendering the list of students, subjects, and other logged-in user experiences. It uses the `Provider` package to watch state changes and redraws widgets efficiently when data updates.
+
+#### 3. Services (`services/`)
+- **`api_service.dart`**: The network layer of the app. It abstracts away raw HTTP requests, providing clean asynchronous methods (Futures) to fetch, create, and update students and subjects from the backend API running at `localhost:8080`.
+
+#### 4. Models (`models/`)
+- **`student.dart` & `subject.dart`**: Dart data classes. They contain JSON serialization logic (`fromJson` and `toJson`) to easily map standard API JSON payloads into strongly-typed Dart objects. 
 
 ---
 
@@ -68,10 +80,21 @@ A cross-platform mobile (and desktop/web) application built using **Dart / Flutt
 A minimalistic, static **HTML/CSS/JS** web application serving as an administrative portal or alternate dashboard.
 
 - **Stack**: Vanilla HTML5, CSS3, JavaScript (No frontend frameworks).
-- **Structure**:
-  - HTML pages (`index.html`, `login.html`, `analytics.html`).
-  - JavaScript logic (`js/app.js`, `js/auth.js`, `js/analytics.js`).
-- **Functionality**:
-  - Uses the Fetch API to connect to the Spring Boot backend (`http://localhost:8080/api`).
-  - Authentication: Reads a `studentUser` key out of `localStorage`. Redirects to `login.html` if the user is not authenticated.
-  - Features: Forms to Add Student, Add Subject, and Assign Subject to Student. Dynamically renders tables of students and subjects by manipulating the DOM.
+
+### Web Components
+
+The codebase in `/frontend-web/` is organized into static pages and their supporting assets:
+
+#### 1. HTML Pages (Views)
+- **`index.html`**: The main administrative dashboard. Provides the user interface containing forms and tables to perform CRUD operations (Add Student, Add Subject, Assign Subjects).
+- **`login.html`**: The authentication view where administrators or users log in.
+- **`analytics.html`**: A view dedicated to displaying reports or metrics related to students and subjects.
+
+#### 2. JavaScript Logic (`js/`)
+- **`auth.js`**: Handles session management and user access control. It writes the `studentUser` key to `localStorage` upon successful login and immediately intercepts unauthenticated users, redirecting them to `login.html` if they try to access protected pages.
+- **`app.js`**: The core application logic. It implements the data fetching and DOM manipulation. Utilizing the `Fetch API`, it communicates with the Spring Boot backend (`http://localhost:8080/api`), handles form submissions, and dynamically injects rows into the HTML tables to display students and subjects.
+- **`analytics.js`**: Contains isolated logic specific to the analytics dashboard, responsible for fetching analytical endpoints and generating visual metrics.
+
+#### 3. Styling and Assets
+- **`css/style.css`**: Contains all custom CSS rules applied across the HTML pages to ensure a consistent, responsive design.
+- **`assets/images/`**: Stores static images and icons used within the user interface.
