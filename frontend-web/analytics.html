@@ -4,52 +4,74 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student App - Analytics</title>
-    <link rel="stylesheet" href="css/style.css">
+    <!-- Consistency: Using Tailwind CSS as seen in Login and Dashboards -->
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <header>
-        <h1>Student-Subject Analytics</h1>
-        <nav style="margin-top: 1rem;">
-            <a href="index.html" style="color: white; text-decoration: underline;">Back to Dashboard</a>
-        </nav>
+<body class="bg-gray-100 font-sans text-gray-800 min-h-screen flex flex-col">
+
+    <!-- Header: Consistent with Admin Dashboard style -->
+    <header class="bg-teal-700 text-white shadow-md">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-extrabold tracking-tight">Student-Subject Analytics</h1>
+            <nav class="flex space-x-6 items-center">
+                <!-- Navigation: Consistent with Admin Dashboard font and hover effects -->
+                <a href="index.html" class="hover:text-teal-200 transition font-medium">Back to Dashboard</a>
+            </nav>
+        </div>
     </header>
 
-    <div class="container" style="display: block;">
+    <main class="container mx-auto px-4 py-8 flex-grow">
         
-        <div class="card" style="margin-bottom: 2rem;">
-            <h2>Students and their Courses</h2>
-            <table id="student-courses-table">
-                <thead>
-                    <tr>
-                        <th>Student Name</th>
-                        <th>Email</th>
-                        <th>Enrolled Courses</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Populated by JS -->
-                </tbody>
-            </table>
+        <div class="grid grid-cols-1 gap-8">
+            
+            <!-- Section 1: Students and their Courses -->
+            <section class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                    <h2 class="text-lg font-bold text-gray-700">Students and their Courses</h2>
+                </div>
+                <div class="overflow-x-auto">
+                    <!-- Table with enhanced padding (px-6 py-4) -->
+                    <table id="student-courses-table" class="min-w-full text-left table-auto">
+                        <thead class="bg-white text-gray-500 text-xs uppercase tracking-wider border-b">
+                            <tr>
+                                <th class="px-6 py-4 font-medium">Student Name</th>
+                                <th class="px-6 py-4 font-medium">Email</th>
+                                <th class="px-6 py-4 font-medium">Enrolled Courses</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100 text-sm text-gray-700">
+                            <!-- Populated by js/analytics.js -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Section 2: Courses and Enrolled Students -->
+            <section class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                    <h2 class="text-lg font-bold text-gray-700">Courses and Enrolled Students</h2>
+                </div>
+                <div class="overflow-x-auto">
+                    <!-- Table with enhanced padding (px-6 py-4) -->
+                    <table id="course-students-table" class="min-w-full text-left table-auto">
+                        <thead class="bg-white text-gray-500 text-xs uppercase tracking-wider border-b">
+                            <tr>
+                                <th class="px-6 py-4 font-medium">Course Code</th>
+                                <th class="px-6 py-4 font-medium">Course Name</th>
+                                <th class="px-6 py-4 font-medium">Enrolled Students</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100 text-sm text-gray-700">
+                            <!-- Populated by js/analytics.js -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
         </div>
+    </main>
 
-        <div class="card">
-            <h2>Courses and Enrolled Students</h2>
-            <table id="course-students-table">
-                <thead>
-                    <tr>
-                        <th>Course Code</th>
-                        <th>Course Name</th>
-                        <th>Enrolled Students</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Populated by JS -->
-                </tbody>
-            </table>
-        </div>
-
-    </div>
-
+    <!-- Functionality: Retaining original script reference -->
     <script src="js/analytics.js"></script>
 </body>
 </html>

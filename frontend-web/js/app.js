@@ -50,13 +50,14 @@ async function fetchStudents() {
                 ? student.subjects.map(sub => sub.name).join(', ') 
                 : 'None';
 
+            tr.className = "table-row-hover";
             tr.innerHTML = `
-                <td>${student.name}</td>
-                <td>${student.email}</td>
-                <td>${assignedSubjects || 'None'}</td>
-                <td>
-                    <button onclick="editStudent('${student.id}', '${student.name}', '${student.email}')">Edit</button>
-                    <button onclick="deleteStudent('${student.id}')">Delete</button>
+                <td class="px-6 py-4 whitespace-nowrap">${student.name}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-gray-500">${student.email}</td>
+                <td class="px-6 py-4">${assignedSubjects || '<span class="text-gray-400 italic">None</span>'}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <button onclick="editStudent('${student.id}', '${student.name}', '${student.email}')" class="text-blue-600 hover:text-blue-900 mr-3">Edit</button>
+                    <button onclick="deleteStudent('${student.id}')" class="text-red-600 hover:text-red-900">Delete</button>
                 </td>
             `;
             studentsTableBody.appendChild(tr);
@@ -70,10 +71,11 @@ async function fetchStudents() {
             if (student.subjects && student.subjects.length > 0) {
                 student.subjects.forEach(subject => {
                     const trAssign = document.createElement('tr');
+                    trAssign.className = "table-row-hover";
                     trAssign.innerHTML = `
-                        <td>${student.name}</td>
-                        <td>${subject.name}</td>
-                        <td>${subject.code}</td>
+                        <td class="px-6 py-3 whitespace-nowrap">${student.name}</td>
+                        <td class="px-6 py-3 whitespace-nowrap font-semibold">${subject.name}</td>
+                        <td class="px-6 py-3 whitespace-nowrap"><span class="bg-gray-100 text-gray-800 px-2 py-0.5 rounded text-xs font-mono">${subject.code}</span></td>
                     `;
                     assignmentsTableBody.appendChild(trAssign);
                 });
@@ -98,13 +100,14 @@ async function fetchSubjects() {
         subjects.forEach(subject => {
             // Populate table row
             const tr = document.createElement('tr');
+            tr.className = "table-row-hover";
             tr.innerHTML = `
-                <td>${subject.id}</td>
-                <td>${subject.name}</td>
-                <td>${subject.code}</td>
-                <td>
-                    <button onclick="editSubject(${subject.id}, '${subject.name}', '${subject.code}')">Edit</button>
-                    <button onclick="deleteSubject(${subject.id})">Delete</button>
+                <td class="px-6 py-4 whitespace-nowrap text-gray-500 text-xs">${subject.id}</td>
+                <td class="px-6 py-4 whitespace-nowrap font-semibold">${subject.name}</td>
+                <td class="px-6 py-4 whitespace-nowrap"><span class="bg-gray-100 text-gray-800 px-2 py-1 rounded text-xs font-mono tracking-wider">${subject.code}</span></td>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <button onclick="editSubject(${subject.id}, '${subject.name}', '${subject.code}')" class="text-blue-600 hover:text-blue-900 mr-3">Edit</button>
+                    <button onclick="deleteSubject(${subject.id})" class="text-red-600 hover:text-red-900">Delete</button>
                 </td>
             `;
             subjectsTableBody.appendChild(tr);

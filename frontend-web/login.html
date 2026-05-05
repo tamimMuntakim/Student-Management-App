@@ -4,51 +4,49 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Student Management</title>
-    <link rel="stylesheet" href="css/style.css">
-    <style>
-        .auth-container { max-width: 400px; margin: 2rem auto; padding: 2rem; background: #fff; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border-radius: 8px; }
-        .auth-toggle { text-align: center; margin-top: 1rem; cursor: pointer; color: blue; text-decoration: underline; }
-    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <header>
-        <h1>Student Management Login</h1>
-    </header>
-    <div class="auth-container">
+<body class="bg-gray-50 flex items-center justify-center min-h-screen text-gray-800">
+    <div class="bg-white p-8 rounded-xl shadow-xl w-full max-w-md">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-extrabold text-teal-600">StudentApp</h1>
+            <p class="text-gray-500 mt-2">Manage your education</p>
+        </div>
+
         <div id="login-section">
-            <h2>Login</h2>
-            <form id="login-form">
-                <div class="form-group">
-                    <label>Email:</label>
-                    <input type="email" id="login-email" required>
+            <h2 class="text-xl font-bold mb-4">Login</h2>
+            <form id="login-form" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Email</label>
+                    <input type="email" id="login-email" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-teal-500 focus:border-teal-500">
                 </div>
-                <div class="form-group">
-                    <label>Password:</label>
-                    <input type="password" id="login-password" required>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Password</label>
+                    <input type="password" id="login-password" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-teal-500 focus:border-teal-500">
                 </div>
-                <button type="submit">Login</button>
+                <button type="submit" class="w-full bg-teal-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-teal-700 transition">Login</button>
             </form>
-            <p class="auth-toggle" onclick="toggleAuth()">Need an account? Register</p>
+            <p class="text-center mt-4 text-sm text-teal-600 cursor-pointer hover:underline" onclick="toggleAuth()">Need an account? Register</p>
         </div>
 
         <div id="register-section" style="display:none;">
-            <h2>Register</h2>
-            <form id="register-form">
-                <div class="form-group">
-                    <label>Name:</label>
-                    <input type="text" id="register-name" required>
+            <h2 class="text-xl font-bold mb-4">Register</h2>
+            <form id="register-form" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Name</label>
+                    <input type="text" id="register-name" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-teal-500 focus:border-teal-500">
                 </div>
-                <div class="form-group">
-                    <label>Email:</label>
-                    <input type="email" id="register-email" required>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Email</label>
+                    <input type="email" id="register-email" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-teal-500 focus:border-teal-500">
                 </div>
-                <div class="form-group">
-                    <label>Password:</label>
-                    <input type="password" id="register-password" required>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Password</label>
+                    <input type="password" id="register-password" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-teal-500 focus:border-teal-500">
                 </div>
-                <button type="submit">Register</button>
+                <button type="submit" class="w-full bg-teal-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-teal-700 transition">Register</button>
             </form>
-            <p class="auth-toggle" onclick="toggleAuth()">Already have an account? Login</p>
+            <p class="text-center mt-4 text-sm text-teal-600 cursor-pointer hover:underline" onclick="toggleAuth()">Already have an account? Login</p>
         </div>
     </div>
     <script src="js/auth.js"></script>

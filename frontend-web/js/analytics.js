@@ -18,14 +18,18 @@ function populateStudentCoursesTable(students) {
 
     students.forEach(student => {
         const tr = document.createElement('tr');
-        const subjectsList = student.subjects && student.subjects.length > 0 
-            ? student.subjects.map(sub => `${sub.name} (${sub.code})`).join(', ') 
-            : 'None';
+        // Added hover effect consistent with index.html
+        tr.className = "hover:bg-gray-50 transition";
 
+        const subjectsList = student.subjects && student.subjects.length > 0 
+            ? student.subjects.map(sub => `<span class="bg-teal-100 text-teal-800 px-2 py-0.5 rounded text-xs font-medium mr-1">${sub.name}</span>`).join(' ') 
+            : '<span class="text-gray-400 italic">None</span>';
+
+        // Added 'px-6 py-4' to every <td> for consistent padding
         tr.innerHTML = `
-            <td>${student.name}</td>
-            <td>${student.email}</td>
-            <td>${subjectsList}</td>
+            <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">${student.name}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-gray-500">${student.email}</td>
+            <td class="px-6 py-4 text-gray-500">${subjectsList}</td>
         `;
         tbody.appendChild(tr);
     });
@@ -35,8 +39,7 @@ function populateCourseStudentsTable(students) {
     const tbody = document.querySelector('#course-students-table tbody');
     tbody.innerHTML = '';
 
-    // Group students by course
-    const courseMap = {}; // key: subject.code, value: { course: subject, students: [] }
+    const courseMap = {}; 
 
     students.forEach(student => {
         if (student.subjects) {
@@ -55,18 +58,23 @@ function populateCourseStudentsTable(students) {
     const courses = Object.values(courseMap);
     
     if (courses.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="3">No courses with enrolled students found.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="3" class="px-6 py-8 text-center text-gray-400 italic">No courses with enrolled students found.</td></tr>';
         return;
     }
 
     courses.forEach(item => {
         const tr = document.createElement('tr');
+        tr.className = "hover:bg-gray-50 transition";
+        
         const studentsList = item.students.join(', ');
 
+        // Added 'px-6 py-4' and font styling to match the Admin Dashboard
         tr.innerHTML = `
-            <td>${item.course.code}</td>
-            <td>${item.course.name}</td>
-            <td>${studentsList}</td>
+            <td class="px-6 py-4 whitespace-nowrap font-mono text-xs font-bold text-teal-700">
+                <span class="bg-teal-50 px-2 py-1 rounded border border-teal-100">${item.course.code}</span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">${item.course.name}</td>
+            <td class="px-6 py-4 text-gray-500">${studentsList}</td>
         `;
         tbody.appendChild(tr);
     });
