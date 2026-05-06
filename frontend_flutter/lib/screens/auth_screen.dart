@@ -36,70 +36,128 @@ class _AuthScreenState extends State<AuthScreen> {
         } else {
           if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Invalid credentials or Server unreachable')));
+              const SnackBar(content: Text('Invalid credentials or Server unreachable')));
         }
       } else {
         final success = await _apiService.register(name, email, password);
         if (success) {
           if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Registered successfully. Please login.')));
+              const SnackBar(content: Text('Registered successfully. Please login.')));
           setState(() {
             isLogin = true;
           });
         } else {
           if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Registration failed')));
+              const SnackBar(content: Text('Registration failed')));
         }
       }
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Network Error: Make sure backend is running!')));
+          const SnackBar(content: Text('Network Error: Make sure backend is running!')));
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(isLogin ? 'Login' : 'Register')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (!isLogin)
-              TextField(
-                controller: _nameCtrl,
-                decoration: InputDecoration(labelText: 'Name'),
+      backgroundColor: Colors.grey[100],
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'Student Management App',
+                style: TextStyle(
+                  fontSize: 26,
+                  fontWeight: FontWeight.w800,
+                  color: Colors.teal[800],
+                  letterSpacing: -0.5,
+                ),
+                textAlign: TextAlign.center,
               ),
-            TextField(
-              controller: _emailCtrl,
-              decoration: InputDecoration(labelText: 'Email'),
-              keyboardType: TextInputType.emailAddress,
-            ),
-            TextField(
-              controller: _passwordCtrl,
-              decoration: InputDecoration(labelText: 'Password'),
-              obscureText: true,
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _submit,
-              child: Text(isLogin ? 'Login' : 'Register'),
-            ),
-            TextButton(
-              onPressed: () {
-                setState(() {
-                  isLogin = !isLogin;
-                });
-              },
-              child: Text(isLogin
-                  ? "Don't have an account? Register"
-                  : 'Already have an account? Login'),
-            )
-          ],
+              const SizedBox(height: 32),
+              Card(
+                elevation: 0,
+                color: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  side: BorderSide(color: Colors.grey[200]!, width: 1),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(32.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                        isLogin ? 'Sign In' : 'Create an Account',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey[800],
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 24),
+                      if (!isLogin) ...[
+                        const Text('Name', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
+                        const SizedBox(height: 6),
+                        TextField(
+                          controller: _nameCtrl,
+                          decoration: const InputDecoration(hintText: 'John Doe'),
+                        ),
+                        const SizedBox(height: 16),
+                      ],
+                      const Text('Email Address', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
+                      const SizedBox(height: 6),
+                      TextField(
+                        controller: _emailCtrl,
+                        decoration: const InputDecoration(hintText: 'john@example.com'),
+                        keyboardType: TextInputType.emailAddress,
+                      ),
+                      const SizedBox(height: 16),
+                      const Text('Password', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
+                      const SizedBox(height: 6),
+                      TextField(
+                        controller: _passwordCtrl,
+                        decoration: const InputDecoration(hintText: '••••••••'),
+                        obscureText: true,
+                      ),
+                      const SizedBox(height: 24),
+                      ElevatedButton(
+                        onPressed: _submit,
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: Text(
+                          isLogin ? 'Login' : 'Register',
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      TextButton(
+                        onPressed: () {
+                          setState(() {
+                            isLogin = !isLogin;
+                          });
+                        },
+                        child: Text(isLogin
+                            ? "Don't have an account? Register"
+                            : 'Already have an account? Login'),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

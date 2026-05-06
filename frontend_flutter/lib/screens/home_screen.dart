@@ -16,30 +16,37 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Student Management'),
+        title: const Text('Admin Dashboard'),
         actions: [
-          IconButton(
-            icon: Icon(Icons.logout),
-            onPressed: () async {
-              await ApiService().logout();
-              Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (_) => AuthScreen()));
-            },
-          )
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: TextButton.icon(
+              icon: const Icon(Icons.logout, color: Colors.white, size: 18),
+              label: const Text('Logout', style: TextStyle(color: Colors.white)),
+              style: TextButton.styleFrom(
+                backgroundColor: Colors.red[500],
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              ),
+              onPressed: () async {
+                await ApiService().logout();
+                Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (_) => AuthScreen()));
+              },
+            ),
+          ),
         ],
       ),
       body: _buildPage(),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (index) => setState(() => _currentIndex = index),
-        items: [
+        items: const [
           BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Students'),
           BottomNavigationBarItem(icon: Icon(Icons.book), label: 'Subjects'),
-          BottomNavigationBarItem(icon: Icon(Icons.assignment), label: 'Assignments'),
+          BottomNavigationBarItem(icon: Icon(Icons.assignment), label: 'Assign'),
           BottomNavigationBarItem(icon: Icon(Icons.analytics), label: 'Analytics'),
         ],
-        selectedItemColor: Colors.blue,
-        unselectedItemColor: Colors.grey,
       ),
     );
   }
@@ -60,6 +67,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
+// -----------------------------------------------------
+// STUDENTS VIEW
+// -----------------------------------------------------
 class StudentsView extends StatefulWidget {
   @override
   _StudentsViewState createState() => _StudentsViewState();
@@ -87,6 +97,7 @@ class _StudentsViewState extends State<StudentsView> {
     await _apiService.addStudent(_nameCtrl.text, _emailCtrl.text);
     _nameCtrl.clear();
     _emailCtrl.clear();
+    FocusScope.of(context).unfocus();
     _fetchStudents();
   }
 
@@ -101,23 +112,25 @@ class _StudentsViewState extends State<StudentsView> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text('Edit Student'),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        title: const Text('Edit Student', style: TextStyle(fontWeight: FontWeight.bold)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            TextField(controller: nameCtrl, decoration: InputDecoration(labelText: 'Name')),
-            TextField(controller: emailCtrl, decoration: InputDecoration(labelText: 'Email')),
+            TextField(controller: nameCtrl, decoration: const InputDecoration(labelText: 'Name')),
+            const SizedBox(height: 16),
+            TextField(controller: emailCtrl, decoration: const InputDecoration(labelText: 'Email')),
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: Text('Cancel')),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel', style: TextStyle(color: Colors.grey))),
           ElevatedButton(
             onPressed: () async {
               await _apiService.updateStudent(student.id!, nameCtrl.text, emailCtrl.text);
               Navigator.pop(ctx);
               _fetchStudents();
             },
-            child: Text('Save'),
+            child: const Text('Save'),
           )
         ],
       ),
@@ -128,41 +141,85 @@ class _StudentsViewState extends State<StudentsView> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            children: [
-              Expanded(child: TextField(controller: _nameCtrl, decoration: InputDecoration(labelText: 'Name'))),
-              SizedBox(width: 8),
-              Expanded(child: TextField(controller: _emailCtrl, decoration: InputDecoration(labelText: 'Email'))),
-              IconButton(icon: Icon(Icons.add), onPressed: _addStudent),
-            ],
+        Card(
+          margin: const EdgeInsets.all(16),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Add Student', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[800])),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Expanded(child: TextField(controller: _nameCtrl, decoration: const InputDecoration(hintText: 'Name'))),
+                    const SizedBox(width: 8),
+                    Expanded(child: TextField(controller: _emailCtrl, decoration: const InputDecoration(hintText: 'Email'))),
+                    const SizedBox(width: 8),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16)),
+                      onPressed: _addStudent,
+                      child: const Icon(Icons.add, color: Colors.white),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
         Expanded(
           child: ListView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             itemCount: _students.length,
             itemBuilder: (context, index) {
               final student = _students[index];
-              final subjects = student.subjects.map((s) => s.name).join(', ');
               return Card(
-                margin: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                child: ListTile(
-                  title: Text(student.name, style: TextStyle(fontWeight: FontWeight.bold)),
-                  subtitle: Text('${student.email}\\nSubjects: ${subjects.isEmpty ? 'None' : subjects}'),
-                  isThreeLine: true,
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        icon: Icon(Icons.edit, color: Colors.blue),
-                        onPressed: () => _editStudent(student),
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.delete, color: Colors.red),
-                        onPressed: () => _deleteStudent(student.id!),
-                      )
-                    ],
+                margin: const EdgeInsets.only(bottom: 8),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  side: BorderSide(color: Colors.grey[200]!, width: 1),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(4.0),
+                  child: ListTile(
+                    title: Text(student.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 4),
+                        Text(student.email, style: TextStyle(color: Colors.grey[600], fontSize: 14)),
+                        const SizedBox(height: 8),
+                        Wrap(
+                          spacing: 6,
+                          runSpacing: 6,
+                          children: student.subjects.isEmpty
+                            ? [Text('No subjects', style: TextStyle(color: Colors.grey[400], fontStyle: FontStyle.italic, fontSize: 12))]
+                            : student.subjects.map((s) => Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: Colors.teal.shade50,
+                                  borderRadius: BorderRadius.circular(4),
+                                  border: Border.all(color: Colors.teal.shade100)
+                                ),
+                                child: Text(s.name, style: TextStyle(color: Colors.teal.shade800, fontSize: 12, fontWeight: FontWeight.w500)),
+                              )).toList(),
+                        )
+                      ],
+                    ),
+                    isThreeLine: true,
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        TextButton(
+                          onPressed: () => _editStudent(student),
+                          child: const Text('Edit', style: TextStyle(color: Colors.blue)),
+                        ),
+                        TextButton(
+                          onPressed: () => _deleteStudent(student.id!),
+                          child: const Text('Delete', style: TextStyle(color: Colors.red)),
+                        )
+                      ],
+                    ),
                   ),
                 ),
               );
@@ -174,6 +231,9 @@ class _StudentsViewState extends State<StudentsView> {
   }
 }
 
+// -----------------------------------------------------
+// SUBJECTS VIEW
+// -----------------------------------------------------
 class SubjectsView extends StatefulWidget {
   @override
   _SubjectsViewState createState() => _SubjectsViewState();
@@ -201,6 +261,7 @@ class _SubjectsViewState extends State<SubjectsView> {
     await _apiService.addSubject(_nameCtrl.text, _codeCtrl.text);
     _nameCtrl.clear();
     _codeCtrl.clear();
+    FocusScope.of(context).unfocus();
     _fetchSubjects();
   }
 
@@ -215,23 +276,25 @@ class _SubjectsViewState extends State<SubjectsView> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text('Edit Subject'),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        title: const Text('Edit Subject', style: TextStyle(fontWeight: FontWeight.bold)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            TextField(controller: nameCtrl, decoration: InputDecoration(labelText: 'Subject Name')),
-            TextField(controller: codeCtrl, decoration: InputDecoration(labelText: 'Subject Code')),
+            TextField(controller: nameCtrl, decoration: const InputDecoration(labelText: 'Subject Name')),
+            const SizedBox(height: 16),
+            TextField(controller: codeCtrl, decoration: const InputDecoration(labelText: 'Subject Code')),
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: Text('Cancel')),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel', style: TextStyle(color: Colors.grey))),
           ElevatedButton(
             onPressed: () async {
               await _apiService.updateSubject(subject.id!, nameCtrl.text, codeCtrl.text);
               Navigator.pop(ctx);
               _fetchSubjects();
             },
-            child: Text('Save'),
+            child: const Text('Save'),
           )
         ],
       ),
@@ -242,40 +305,73 @@ class _SubjectsViewState extends State<SubjectsView> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            children: [
-              Expanded(child: TextField(controller: _nameCtrl, decoration: InputDecoration(labelText: 'Name'))),
-              SizedBox(width: 8),
-              Expanded(child: TextField(controller: _codeCtrl, decoration: InputDecoration(labelText: 'Code'))),
-              IconButton(icon: Icon(Icons.add), onPressed: _addSubject),
-            ],
+        Card(
+          margin: const EdgeInsets.all(16),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Add Subject', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[800])),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Expanded(child: TextField(controller: _nameCtrl, decoration: const InputDecoration(hintText: 'Subject Name'))),
+                    const SizedBox(width: 8),
+                    Expanded(child: TextField(controller: _codeCtrl, decoration: const InputDecoration(hintText: 'Subject Code'))),
+                    const SizedBox(width: 8),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16)),
+                      onPressed: _addSubject,
+                      child: const Icon(Icons.add, color: Colors.white),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
         Expanded(
           child: ListView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             itemCount: _subjects.length,
             itemBuilder: (context, index) {
               final subject = _subjects[index];
               return Card(
-                margin: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                child: ListTile(
-                  leading: CircleAvatar(child: Text(subject.code.isNotEmpty ? subject.code.substring(0,1) : '')),
-                  title: Text(subject.name, style: TextStyle(fontWeight: FontWeight.bold)),
-                  subtitle: Text(subject.code),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        icon: Icon(Icons.edit, color: Colors.blue),
-                        onPressed: () => _editSubject(subject),
+                margin: const EdgeInsets.only(bottom: 8),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  side: BorderSide(color: Colors.grey[200]!, width: 1),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(4.0),
+                  child: ListTile(
+                    leading: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[100],
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(color: Colors.grey[300]!)
                       ),
-                      IconButton(
-                        icon: Icon(Icons.delete, color: Colors.red),
-                        onPressed: () => _deleteSubject(subject.id!),
-                      )
-                    ],
+                      child: Text(
+                        subject.code,
+                        style: TextStyle(fontFamily: 'monospace', fontWeight: FontWeight.bold, color: Colors.teal[800]),
+                      ),
+                    ),
+                    title: Text(subject.name, style: const TextStyle(fontWeight: FontWeight.bold)),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        TextButton(
+                          onPressed: () => _editSubject(subject),
+                          child: const Text('Edit', style: TextStyle(color: Colors.blue)),
+                        ),
+                        TextButton(
+                          onPressed: () => _deleteSubject(subject.id!),
+                          child: const Text('Delete', style: TextStyle(color: Colors.red)),
+                        )
+                      ],
+                    ),
                   ),
                 ),
               );
@@ -287,6 +383,9 @@ class _SubjectsViewState extends State<SubjectsView> {
   }
 }
 
+// -----------------------------------------------------
+// ASSIGNMENTS VIEW
+// -----------------------------------------------------
 class AssignmentsView extends StatefulWidget {
   @override
   _AssignmentsViewState createState() => _AssignmentsViewState();
@@ -317,58 +416,125 @@ class _AssignmentsViewState extends State<AssignmentsView> {
   void _assignSubject() async {
     if (_selectedStudent == null || _selectedSubject == null) return;
     await _apiService.assignSubject(_selectedStudent!, _selectedSubject!);
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Subject Assigned!')));
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Subject Assigned!')));
+    _selectedStudent = null;
+    _selectedSubject = null;
     _fetchData(); // refresh data
   }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          DropdownButton<String>(
-            isExpanded: true,
-            hint: Text('-- Select Student --'),
-            value: _selectedStudent,
-            items: _students.map((e) => DropdownMenuItem(value: e.id, child: Text(e.name))).toList(),
-            onChanged: (val) => setState(() => _selectedStudent = val),
-          ),
-          SizedBox(height: 16),
-          DropdownButton<int>(
-            isExpanded: true,
-            hint: Text('-- Select Subject --'),
-            value: _selectedSubject,
-            items: _subjects.map((e) => DropdownMenuItem(value: e.id, child: Text(e.name))).toList(),
-            onChanged: (val) => setState(() => _selectedSubject = val),
-          ),
-          SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: _assignSubject,
-            child: Text('Assign Subject'),
-          ),
-          Divider(),
-          Expanded(
-            child: ListView.builder(
-              itemCount: _students.length,
-              itemBuilder: (ctx, idx) {
-                final student = _students[idx];
-                final subList = student.subjects.map((s) => '\${s.name} (\${s.code})').join(', ');
-                if (student.subjects.isEmpty) return SizedBox.shrink();
-                return ListTile(
-                  title: Text(student.name),
-                  subtitle: Text(subList),
-                );
-              },
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Card(
+          margin: const EdgeInsets.all(16),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Assign Subject', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[800])),
+                const SizedBox(height: 16),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(color: Colors.grey[300]!),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButton<String>(
+                      isExpanded: true,
+                      hint: const Text('-- Select Student --'),
+                      value: _selectedStudent,
+                      items: _students.map((e) => DropdownMenuItem(value: e.id, child: Text(e.name))).toList(),
+                      onChanged: (val) => setState(() => _selectedStudent = val),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(color: Colors.grey[300]!),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButton<int>(
+                      isExpanded: true,
+                      hint: const Text('-- Select Subject --'),
+                      value: _selectedSubject,
+                      items: _subjects.map((e) => DropdownMenuItem(value: e.id, child: Text('${e.name} (${e.code})'))).toList(),
+                      onChanged: (val) => setState(() => _selectedSubject = val),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: _assignSubject,
+                    child: const Text('Assign Subject'),
+                  ),
+                ),
+              ],
             ),
-          )
-        ],
-      ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
+          child: Text('Assigned Subjects Log', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey[700])),
+        ),
+        Expanded(
+          child: ListView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            itemCount: _students.length,
+            itemBuilder: (ctx, idx) {
+              final student = _students[idx];
+              if (student.subjects.isEmpty) return const SizedBox.shrink();
+              return Card(
+                margin: const EdgeInsets.only(bottom: 8),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  side: BorderSide(color: Colors.grey[200]!, width: 1),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(4.0),
+                  child: ListTile(
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                    title: Text(student.name, style: const TextStyle(fontWeight: FontWeight.bold)),
+                    subtitle: Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: Wrap(
+                        spacing: 6,
+                        runSpacing: 6,
+                        children: student.subjects.map((s) => Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: Colors.grey[100],
+                            borderRadius: BorderRadius.circular(4),
+                            border: Border.all(color: Colors.grey[300]!)
+                          ),
+                          child: Text('${s.name} (${s.code})', style: TextStyle(fontSize: 12, color: Colors.grey[800], fontWeight: FontWeight.w500)),
+                        )).toList(),
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        )
+      ],
     );
   }
 }
 
+// -----------------------------------------------------
+// ANALYTICS VIEW
+// -----------------------------------------------------
 class AnalyticsView extends StatefulWidget {
   @override
   _AnalyticsViewState createState() => _AnalyticsViewState();
@@ -395,10 +561,11 @@ class _AnalyticsViewState extends State<AnalyticsView> {
     Map<String, List<String>> map = {};
     for (var student in _students) {
       for (var subject in student.subjects) {
-        if (!map.containsKey(subject.name)) {
-          map[subject.name] = [];
+        String key = '${subject.code}: ${subject.name}';
+        if (!map.containsKey(key)) {
+          map[key] = [];
         }
-        map[subject.name]!.add(student.name);
+        map[key]!.add(student.name);
       }
     }
     return map;
@@ -409,19 +576,73 @@ class _AnalyticsViewState extends State<AnalyticsView> {
     final courseStudents = _getCourseStudents();
     
     return ListView(
-      padding: EdgeInsets.all(8),
+      padding: const EdgeInsets.all(16),
       children: [
-        Text('Students and Enrolled Courses', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-        ..._students.map((s) => ListTile(
-          title: Text(s.name),
-          subtitle: Text(s.subjects.isEmpty ? 'No courses' : s.subjects.map((sub) => sub.name).join(', ')),
-        )),
-        Divider(),
-        Text('Courses and Enrolled Students', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-        ...courseStudents.entries.map((entry) => ListTile(
-          title: Text(entry.key),
-          subtitle: Text(entry.value.join(', ')),
-        )),
+        Text('Students and Enrolled Courses', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[800])),
+        const SizedBox(height: 12),
+        Card(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+            side: BorderSide(color: Colors.grey[200]!, width: 1),
+          ),
+          child: Column(
+            children: _students.map((s) => Column(
+              children: [
+                ListTile(
+                  title: Text(s.name, style: const TextStyle(fontWeight: FontWeight.bold)),
+                  subtitle: Text(s.email, style: TextStyle(color: Colors.grey[600], fontSize: 13)),
+                  trailing: Wrap(
+                    spacing: 4,
+                    children: s.subjects.isEmpty
+                      ? [Text('No courses', style: TextStyle(color: Colors.grey[400], fontStyle: FontStyle.italic))]
+                      : s.subjects.map((sub) => Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: Colors.teal.shade50,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(sub.code, style: TextStyle(color: Colors.teal.shade700, fontSize: 12, fontWeight: FontWeight.w600)),
+                        )).toList(),
+                  ),
+                ),
+                if (s != _students.last) const Divider(height: 1, thickness: 1),
+              ],
+            )).toList(),
+          ),
+        ),
+        const SizedBox(height: 24),
+        Text('Courses and Enrolled Students', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[800])),
+        const SizedBox(height: 12),
+        if (courseStudents.isEmpty)
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Text('No enrolled subjects found.', style: TextStyle(color: Colors.grey[500], fontStyle: FontStyle.italic)),
+          )
+        else
+          Card(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+              side: BorderSide(color: Colors.grey[200]!, width: 1),
+            ),
+            child: Column(
+              children: courseStudents.entries.map((entry) {
+                final isLast = entry.key == courseStudents.entries.last.key;
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ListTile(
+                      title: Text(entry.key, style: TextStyle(fontWeight: FontWeight.bold, color: Colors.teal[800])),
+                      subtitle: Padding(
+                        padding: const EdgeInsets.only(top: 8.0),
+                        child: Text(entry.value.join(', '), style: TextStyle(color: Colors.grey[800])),
+                      ),
+                    ),
+                    if (!isLast) const Divider(height: 1, thickness: 1),
+                  ],
+                );
+              }).toList(),
+            ),
+          ),
       ],
     );
   }

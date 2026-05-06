@@ -1,6 +1,7 @@
-const API_BASE_URL = 'http://localhost:8080/api';
+// Removed the redeclaration of API_BASE_URL since it's already in app.js
+// If analytics.js is the only file, we'd need it, but they are included together now.
 
-window.onload = async () => {
+async function fetchAnalytics() {
     try {
         const response = await fetch(`${API_BASE_URL}/students`);
         const students = await response.json();
@@ -10,22 +11,21 @@ window.onload = async () => {
     } catch (error) {
         console.error('Error fetching analytics data:', error);
     }
-};
+}
 
 function populateStudentCoursesTable(students) {
     const tbody = document.querySelector('#student-courses-table tbody');
+    if (!tbody) return;
     tbody.innerHTML = '';
 
     students.forEach(student => {
         const tr = document.createElement('tr');
-        // Added hover effect consistent with index.html
         tr.className = "hover:bg-gray-50 transition";
 
         const subjectsList = student.subjects && student.subjects.length > 0 
             ? student.subjects.map(sub => `<span class="bg-teal-100 text-teal-800 px-2 py-0.5 rounded text-xs font-medium mr-1">${sub.name}</span>`).join(' ') 
             : '<span class="text-gray-400 italic">None</span>';
 
-        // Added 'px-6 py-4' to every <td> for consistent padding
         tr.innerHTML = `
             <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">${student.name}</td>
             <td class="px-6 py-4 whitespace-nowrap text-gray-500">${student.email}</td>
@@ -37,6 +37,7 @@ function populateStudentCoursesTable(students) {
 
 function populateCourseStudentsTable(students) {
     const tbody = document.querySelector('#course-students-table tbody');
+    if (!tbody) return;
     tbody.innerHTML = '';
 
     const courseMap = {}; 
@@ -68,7 +69,6 @@ function populateCourseStudentsTable(students) {
         
         const studentsList = item.students.join(', ');
 
-        // Added 'px-6 py-4' and font styling to match the Admin Dashboard
         tr.innerHTML = `
             <td class="px-6 py-4 whitespace-nowrap font-mono text-xs font-bold text-teal-700">
                 <span class="bg-teal-50 px-2 py-1 rounded border border-teal-100">${item.course.code}</span>
