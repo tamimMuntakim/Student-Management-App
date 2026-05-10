@@ -678,20 +678,29 @@ class _AnalyticsViewState extends State<AnalyticsView> {
               children: [
                 ListTile(
                   title: Text(s.name, style: const TextStyle(fontWeight: FontWeight.bold)),
-                  subtitle: Text(s.email, style: TextStyle(color: Colors.grey[600], fontSize: 13)),
-                  trailing: Wrap(
-                    spacing: 4,
-                    children: s.subjects.isEmpty
-                      ? [Text('No courses', style: TextStyle(color: Colors.grey[400], fontStyle: FontStyle.italic))]
-                      : s.subjects.map((sub) => Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: Colors.teal.shade50,
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: Text(sub.code, style: TextStyle(color: Colors.teal.shade700, fontSize: 12, fontWeight: FontWeight.w600)),
-                        )).toList(),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 4),
+                      Text(s.email, style: TextStyle(color: Colors.grey[600], fontSize: 13)),
+                      const SizedBox(height: 8),
+                      Wrap(
+                        spacing: 4,
+                        runSpacing: 4,
+                        children: s.subjects.isEmpty
+                          ? [Text('No courses', style: TextStyle(color: Colors.grey[400], fontStyle: FontStyle.italic))]
+                          : s.subjects.map((sub) => Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: Colors.teal.shade50,
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(sub.code, style: TextStyle(color: Colors.teal.shade700, fontSize: 12, fontWeight: FontWeight.w600)),
+                            )).toList(),
+                      ),
+                    ],
                   ),
+                  isThreeLine: true,
                 ),
                 if (s != _students.last) const Divider(height: 1, thickness: 1),
               ],
