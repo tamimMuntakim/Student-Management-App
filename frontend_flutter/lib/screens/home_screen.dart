@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quickalert/quickalert.dart';
 import '../services/api_service.dart';
 import '../models/student.dart';
 import '../models/subject.dart';
@@ -28,10 +29,22 @@ class _HomeScreenState extends State<HomeScreen> {
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               ),
-              onPressed: () async {
-                await ApiService().logout();
-                Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (_) => AuthScreen()));
+              onPressed: () {
+                QuickAlert.show(
+                  context: context,
+                  type: QuickAlertType.confirm,
+                  title: 'Logging out...',
+                  text: 'Are you sure you want to log out?',
+                  confirmBtnText: 'Yes, log out!',
+                  confirmBtnColor: Colors.red,
+                  onConfirmBtnTap: () async {
+                    Navigator.pop(context);
+                    await ApiService().logout();
+                    if (!context.mounted) return;
+                    Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(builder: (_) => AuthScreen()));
+                  },
+                );
               },
             ),
           ),
@@ -93,17 +106,48 @@ class _StudentsViewState extends State<StudentsView> {
   }
 
   void _addStudent() async {
-    if (_nameCtrl.text.isEmpty || _emailCtrl.text.isEmpty) return;
+    if (_nameCtrl.text.isEmpty || _emailCtrl.text.isEmpty) {
+      QuickAlert.show(
+        context: context,
+        type: QuickAlertType.warning,
+        title: 'Missing Info',
+        text: 'Please fill out both name and email.',
+      );
+      return;
+    }
     await _apiService.addStudent(_nameCtrl.text, _emailCtrl.text);
     _nameCtrl.clear();
     _emailCtrl.clear();
     FocusScope.of(context).unfocus();
     _fetchStudents();
+    QuickAlert.show(
+      context: context,
+      type: QuickAlertType.success,
+      title: 'Success',
+      text: 'Student added successfully!',
+    );
   }
 
   void _deleteStudent(String id) async {
-    await _apiService.deleteStudent(id);
-    _fetchStudents();
+    QuickAlert.show(
+      context: context,
+      type: QuickAlertType.confirm,
+      title: 'Are you sure?',
+      text: 'You will not be able to revert this!',
+      confirmBtnText: 'Yes, delete it!',
+      confirmBtnColor: Colors.red,
+      onConfirmBtnTap: () async {
+        Navigator.pop(context);
+        await _apiService.deleteStudent(id);
+        _fetchStudents();
+        QuickAlert.show(
+          context: context,
+          type: QuickAlertType.success,
+          title: 'Deleted!',
+          text: 'Student has been deleted.',
+        );
+      },
+    );
   }
 
   void _editStudent(Student student) {
@@ -257,17 +301,48 @@ class _SubjectsViewState extends State<SubjectsView> {
   }
 
   void _addSubject() async {
-    if (_nameCtrl.text.isEmpty || _codeCtrl.text.isEmpty) return;
+    if (_nameCtrl.text.isEmpty || _codeCtrl.text.isEmpty) {
+       QuickAlert.show(
+        context: context,
+        type: QuickAlertType.warning,
+        title: 'Missing Info',
+        text: 'Please fill out both name and code.',
+      );
+      return;
+    }
     await _apiService.addSubject(_nameCtrl.text, _codeCtrl.text);
     _nameCtrl.clear();
     _codeCtrl.clear();
     FocusScope.of(context).unfocus();
     _fetchSubjects();
+    QuickAlert.show(
+      context: context,
+      type: QuickAlertType.success,
+      title: 'Success',
+      text: 'Subject added successfully!',
+    );
   }
 
   void _deleteSubject(int id) async {
-    await _apiService.deleteSubject(id);
-    _fetchSubjects();
+    QuickAlert.show(
+      context: context,
+      type: QuickAlertType.confirm,
+      title: 'Are you sure?',
+      text: 'You will not be able to revert this!',
+      confirmBtnText: 'Yes, delete it!',
+      confirmBtnColor: Colors.red,
+      onConfirmBtnTap: () async {
+        Navigator.pop(context);
+        await _apiService.deleteSubject(id);
+        _fetchSubjects();
+        QuickAlert.show(
+          context: context,
+          type: QuickAlertType.success,
+          title: 'Deleted!',
+          text: 'Subject has been deleted.',
+        );
+      },
+    );
   }
 
   void _editSubject(Subject subject) {
@@ -414,9 +489,22 @@ class _AssignmentsViewState extends State<AssignmentsView> {
   }
 
   void _assignSubject() async {
-    if (_selectedStudent == null || _selectedSubject == null) return;
+    if (_selectedStudent == null || _selectedSubject == null) {
+      QuickAlert.show(
+        context: context,
+        type: QuickAlertType.warning,
+        title: 'Missing Selection',
+        text: 'Please select both a student and a subject.',
+      );
+      return;
+    }
     await _apiService.assignSubject(_selectedStudent!, _selectedSubject!);
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Subject Assigned!')));
+    QuickAlert.show(
+      context: context,
+      type: QuickAlertType.success,
+      title: 'Success',
+      text: 'Subject assigned successfully!',
+    );
     _selectedStudent = null;
     _selectedSubject = null;
     _fetchData(); // refresh data

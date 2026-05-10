@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quickalert/quickalert.dart';
 import '../services/api_service.dart';
 import '../models/student.dart';
 import 'auth_screen.dart';
@@ -9,10 +10,22 @@ class StudentDashboardScreen extends StatelessWidget {
   const StudentDashboardScreen({Key? key, required this.student}) : super(key: key);
 
   void _logout(BuildContext context) async {
-    final authService = ApiService();
-    await authService.logout();
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => AuthScreen()),
+    QuickAlert.show(
+      context: context,
+      type: QuickAlertType.confirm,
+      title: 'Logging out...',
+      text: 'Are you sure you want to log out?',
+      confirmBtnText: 'Yes, log out!',
+      confirmBtnColor: Colors.red,
+      onConfirmBtnTap: () async {
+        Navigator.pop(context);
+        final authService = ApiService();
+        await authService.logout();
+        if (!context.mounted) return;
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => AuthScreen()),
+        );
+      },
     );
   }
 

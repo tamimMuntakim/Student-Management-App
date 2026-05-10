@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quickalert/quickalert.dart';
 import '../services/api_service.dart';
 import 'home_screen.dart';
 import 'student_dashboard.dart';
@@ -26,37 +27,65 @@ class _AuthScreenState extends State<AuthScreen> {
         final user = await _apiService.login(email, password);
         if (user != null) {
           if (!mounted) return;
-          if (user.role == 'ADMIN') {
-            Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (_) => HomeScreen()));
-          } else {
-            Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (_) => StudentDashboardScreen(student: user)));
-          }
+          QuickAlert.show(
+            context: context,
+            type: QuickAlertType.success,
+            title: 'Login Successful',
+            text: 'Welcome back!',
+            onConfirmBtnTap: () {
+              Navigator.pop(context);
+              if (user.role == 'ADMIN') {
+                Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (_) => HomeScreen()));
+              } else {
+                Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (_) => StudentDashboardScreen(student: user)));
+              }
+            }
+          );
         } else {
           if (!mounted) return;
-          ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Invalid credentials or Server unreachable')));
+          QuickAlert.show(
+            context: context,
+            type: QuickAlertType.error,
+            title: 'Login Failed',
+            text: 'Invalid credentials or Server unreachable',
+          );
         }
       } else {
         final success = await _apiService.register(name, email, password);
         if (success) {
           if (!mounted) return;
-          ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Registered successfully. Please login.')));
-          setState(() {
-            isLogin = true;
-          });
+          QuickAlert.show(
+            context: context,
+            type: QuickAlertType.success,
+            title: 'Registered successfully',
+            text: 'Please login to continue.',
+            onConfirmBtnTap: () {
+              Navigator.pop(context);
+              setState(() {
+                isLogin = true;
+              });
+            }
+          );
         } else {
           if (!mounted) return;
-          ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Registration failed')));
+          QuickAlert.show(
+            context: context,
+            type: QuickAlertType.error,
+            title: 'Registration failed',
+            text: 'Please check your information.',
+          );
         }
       }
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Network Error: Make sure backend is running!')));
+      QuickAlert.show(
+        context: context,
+        type: QuickAlertType.error,
+        title: 'Error',
+        text: 'Network Error: Make sure backend is running!',
+      );
     }
   }
 
