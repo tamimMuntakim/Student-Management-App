@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body class="bg-gray-100 font-sans text-gray-800 antialiased min-h-screen flex flex-col">
 
@@ -51,8 +52,20 @@
 
     <script>
         function logout() {
-            localStorage.removeItem('studentUser');
-            window.location.href = 'login.html';
+            Swal.fire({
+                title: 'Logging out...',
+                text: 'Are you sure you want to log out?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#0f766e',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, log out!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    localStorage.removeItem('studentUser');
+                    window.location.href = 'login.html';
+                }
+            });
         }
 
         window.onload = () => {

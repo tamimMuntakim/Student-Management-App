@@ -26,8 +26,20 @@ window.onload = () => {
 
 // Logout Function
 function logout() {
-    localStorage.removeItem('studentUser');
-    window.location.href = 'login.html';
+    Swal.fire({
+        title: 'Logging out...',
+        text: 'Are you sure you want to log out?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#0f766e',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, log out!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            localStorage.removeItem('studentUser');
+            window.location.href = 'login.html';
+        }
+    });
 }
 
 // --- API Calls & UI Updates ---
@@ -141,9 +153,21 @@ addStudentForm.addEventListener('submit', async (e) => {
         if (res.ok) {
             addStudentForm.reset();
             fetchStudents(); // Refresh data
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: 'Student added successfully!',
+                timer: 1500,
+                showConfirmButton: false
+            });
         }
     } catch (err) {
         console.error('Failure saving student:', err);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Failed to add student. Please try again.'
+        });
     }
 });
 
@@ -163,9 +187,21 @@ addSubjectForm.addEventListener('submit', async (e) => {
         if (res.ok) {
             addSubjectForm.reset();
             fetchSubjects(); // Refresh data
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: 'Subject added successfully!',
+                timer: 1500,
+                showConfirmButton: false
+            });
         }
     } catch (err) {
         console.error('Failure saving subject:', err);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Failed to add subject. Please try again.'
+        });
     }
 });
 
@@ -175,7 +211,13 @@ assignSubjectForm.addEventListener('submit', async (e) => {
     const studentId = selectStudent.value;
     const subjectId = selectSubject.value;
 
-    if (!studentId || !subjectId) return alert('Please select both student and subject');
+    if (!studentId || !subjectId) {
+        return Swal.fire({
+            icon: 'warning',
+            title: 'Missing Selection',
+            text: 'Please select both student and subject'
+        });
+    }
 
     try {
         const res = await fetch(`${API_BASE_URL}/${studentId}/subjects/${subjectId}`, {
@@ -185,33 +227,98 @@ assignSubjectForm.addEventListener('submit', async (e) => {
         if (res.ok) {
             assignSubjectForm.reset();
             fetchStudents(); // The student's subject list should update now
-            alert("Subject assigned successfully!");
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: 'Subject assigned successfully!',
+                timer: 1500,
+                showConfirmButton: false
+            });
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Failed to assign subject.'
+            });
         }
     } catch (err) {
         console.error('Failure assigning subject:', err);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'An error occurred while assigning subject.'
+        });
     }
 });
 // --- Global Actions for Admin ---
 async function deleteStudent(id) {
-    if (!confirm('Are you sure you want to delete this student?')) return;
+    const result = await Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, delete it!'
+    });
+
+    if (!result.isConfirmed) return;
+
     try {
         const res = await fetch(`${API_BASE_URL}/students/${id}`, { method: 'DELETE' });
-        if (res.ok) fetchStudents();
+        if (res.ok) {
+            fetchStudents();
+            Swal.fire({
+                icon: 'success',
+                title: 'Deleted!',
+                text: 'Student has been deleted.',
+                timer: 1500,
+                showConfirmButton: false
+            });
+        }
     } catch (e) {
         console.error('Delete student failed', e);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Failed to delete student.'
+        });
     }
 }
 
 async function deleteSubject(id) {
-    if (!confirm('Are you sure you want to delete this subject?')) return;
+    const result = await Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, delete it!'
+    });
+
+    if (!result.isConfirmed) return;
+
     try {
         const res = await fetch(`${API_BASE_URL}/subjects/${id}`, { method: 'DELETE' });
         if (res.ok) {
             fetchSubjects();
             fetchStudents(); // Subjects map to students as well
+            Swal.fire({
+                icon: 'success',
+                title: 'Deleted!',
+                text: 'Subject has been deleted.',
+                timer: 1500,
+                showConfirmButton: false
+            });
         }
     } catch (e) {
         console.error('Delete subject failed', e);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Failed to delete subject.'
+        });
     }
 }
 

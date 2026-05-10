@@ -27,17 +27,34 @@ document.getElementById('login-form')?.addEventListener('submit', async (e) => {
         if (response.ok) {
             const user = await response.json();
             localStorage.setItem('studentUser', JSON.stringify(user));
-            if (user.role === 'ADMIN') {
-                window.location.href = 'index.html';
-            } else {
-                window.location.href = 'student_dashboard.html';
-            }
+            
+            Swal.fire({
+                icon: 'success',
+                title: 'Login Successful',
+                text: 'Welcome back!',
+                timer: 1500,
+                showConfirmButton: false
+            }).then(() => {
+                if (user.role === 'ADMIN') {
+                    window.location.href = 'index.html';
+                } else {
+                    window.location.href = 'student_dashboard.html';
+                }
+            });
         } else {
-            alert('Invalid credentials');
+            Swal.fire({
+                icon: 'error',
+                title: 'Login Failed',
+                text: 'Invalid credentials. Please try again.'
+            });
         }
     } catch (error) {
         console.error(error);
-        alert('Server error');
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Server error occurred during login!'
+        });
     }
 });
 
@@ -55,13 +72,26 @@ document.getElementById('register-form')?.addEventListener('submit', async (e) =
         });
 
         if (response.ok) {
-            alert('Registered successfully. Please login.');
-            toggleAuth();
+            Swal.fire({
+                icon: 'success',
+                title: 'Registered successfully',
+                text: 'Please login to continue.'
+            }).then(() => {
+                toggleAuth();
+            });
         } else {
-            alert('Registration failed');
+            Swal.fire({
+                icon: 'error',
+                title: 'Registration failed',
+                text: 'Please check your information and try again.'
+            });
         }
     } catch (error) {
         console.error(error);
-        alert('Server error');
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Server error occurred during registration!'
+        });
     }
 });
