@@ -1,0 +1,58 @@
+@import "tailwindcss";
+
+:root{
+  --brand-bg: #f4f7f6;
+  --primary: #0f766e;
+  --secondary: #007bff;
+}
+
+html,body,#root{height:100%;}
+body{background:var(--brand-bg); color:#333;} 
+
+.nav-active{
+  @apply bg-teal-700 text-white rounded hover:bg-teal-600 hover:text-white transition-all;
+}
+
+.nav-item {
+  @apply block px-4 py-2 rounded-lg mb-2 font-medium text-gray-600 transition-all hover:bg-gray-100 hover:text-gray-800;
+}
+  
+.nav-item.nav-active {
+  @apply text-white bg-teal-700 hover:bg-teal-600 hover:text-white;
+}
+
+.table-row-hover:hover {
+  @apply bg-blue-50 transition;
+}
+
+.btn-primary {
+  @apply bg-teal-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-teal-700 transition shadow-sm;
+}
+
+.btn-danger {
+  @apply bg-red-500 text-white font-semibold py-1 px-3 rounded hover:bg-red-600 transition;
+}
+
+.card {
+  @apply bg-white p-6 rounded-xl shadow-sm border border-gray-200;
+}
+
+.card-header {
+  @apply px-6 py-4 border-b border-gray-200 bg-gray-50;
+}
+
+.input-field {
+  @apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 text-sm;
+}
+
+.select-field {
+  @apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 text-sm bg-white;
+}
+
+.badge {
+  @apply inline-block bg-gray-100 text-gray-800 px-2 py-1 rounded text-xs font-mono font-semibold;
+}
+
+.badge-teal {
+  @apply inline-block bg-teal-100 text-teal-800 px-2 py-0.5 rounded text-xs font-medium mr-1;
+}
